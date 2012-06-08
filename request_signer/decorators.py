@@ -109,3 +109,30 @@ def signature_required(func):
 
     _wrap.signature_required = True
     return _wrap
+
+
+def signature_permission_required(perm):
+    """
+    Decorator for views that checks whether a user, associated with request
+    client, has a particular permission enabled, raising HttpResponseForbidden
+    if necessary.
+
+    Does not validate request signature, so use it together with
+    ``signature_required`` decorator.
+    """
+    def decorator(func):
+        def wrapped(request, *args, **kwargs):
+            client_id = request.GET.get(constants.CLIENT_ID_PARAM_NAME)
+            client = models.AuthorizedClient.get_by_client(client_id)
+
+            if not client:
+                # `signature_required` decorator was not used (yet)?
+                return http.HttpResponseBadRequest("client id was not given.")
+
+            user = client.user
+            if not user or not user.is_active or not user.has_perm(perm):
+                return http.HttpResponseForbidden('Access denied!')
+
+            return func(request, *args, **kwargs)
+        return functools.wraps(func)(wrapped)
+    return decorator

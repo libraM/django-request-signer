@@ -5,6 +5,7 @@ import hmac
 import random
 import time
 
+from django.contrib.auth.models import User
 from django.db import models
 
 def create_private_key():
@@ -23,6 +24,7 @@ class AuthorizedClient(models.Model):
     client_id = models.CharField(max_length=20, primary_key=True)
     private_key = models.CharField(max_length=100, default=create_private_key)
     is_active = models.BooleanField(default=True)
+    user = models.ForeignKey(User, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

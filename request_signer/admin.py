@@ -15,8 +15,8 @@ class AuthorizedClientForm(forms.ModelForm):
         model = AuthorizedClient
 
 class AuthorizedClientAdmin(admin.ModelAdmin):
-    list_display = ['client_id', 'is_active', 'created', 'updated']
-    fields = ['client_id', 'private_key', 'is_active']
+    list_display = ['client_id', 'is_active', 'user', 'created', 'updated']
+    fields = ['client_id', 'private_key', 'user', 'is_active']
     form = AuthorizedClientForm
 
 admin.site.register(AuthorizedClient, AuthorizedClientAdmin)
